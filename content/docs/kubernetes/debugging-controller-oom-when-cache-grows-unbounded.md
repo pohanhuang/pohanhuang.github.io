@@ -26,8 +26,6 @@ mgr.GetFieldIndexer().IndexField(ctx, &VulnerabilityReport{},
 
 The fix, implemented in [PR #444](https://github.com/kubewarden/sbomscanner/pull/444), reduces memory usage by **stripping unnecessary fields** from cached resources before they enter the cache.
 
-### What Gets Stripped
-
 The solution removes three types of fields:
 
 1. **Managed Fields**: `metadata.managedFields` - Kubernetes tracks field managers here, but controllers typically don't need this for reconciliation
@@ -39,13 +37,6 @@ The solution removes three types of fields:
 1. **Managed fields accumulate**: Every update adds entries to `managedFields`. For frequently updated resources, this can grow to hundreds of KB per resource
 2. **Data fields are large**: Image manifests and vulnerability reports can contain MBs of data
 3. **Controllers don't need everything**: Reconciliation logic typically only needs spec fields and basic metadata
-
-## Memory Impact
-
-The fix achieved significant memory reduction:
-
-- **Before**: Controller consuming excessive memory, hitting limits and being OOMKilled
-- **After**: Memory usage reduced to manageable levels, allowing the controller to operate within resource limits
 
 ## Key Takeaways
 
